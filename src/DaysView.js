@@ -9,19 +9,21 @@ var React = require('react'),
 var DateTimePickerDays = onClickOutside( createClass({
 	render: function() {
 		var footer = this.renderFooter(),
-			date = this.props.viewDate,
-			locale = date.localeData(),
-			tableChildren
-			;
+			headerRenderer = this.props.renderHeader || this.renderHeader,
+			tableChildren;
+
+		var headerProps = {
+			showView: this.props.showView,
+			subtractTime: this.props.subtractTime,
+			addTime: this.props.addTime,
+			viewDate: this.props.viewDate,
+			view: 'days'
+		};
 
 		tableChildren = [
 			React.createElement('thead', { key: 'th' }, [
-				React.createElement('tr', { key: 'h' }, [
-					React.createElement('th', { key: 'p', className: 'rdtPrev', onClick: this.props.subtractTime( 1, 'months' )}, React.createElement('span', {}, '‹' )),
-					React.createElement('th', { key: 's', className: 'rdtSwitch', onClick: this.props.showView( 'months' ), colSpan: 5, 'data-value': this.props.viewDate.month() }, locale.months( date ) + ' ' + date.year() ),
-					React.createElement('th', { key: 'n', className: 'rdtNext', onClick: this.props.addTime( 1, 'months' )}, React.createElement('span', {}, '›' ))
-				]),
-				React.createElement('tr', { key: 'd'}, this.getDaysOfWeek( locale ).map( function( day, index ) { return React.createElement('th', { key: day + index, className: 'dow'}, day ); }) )
+				React.createElement('tr', { key: 'h' }, headerRenderer(headerProps)),
+				React.createElement('tr', { key: 'd'}, this.getDaysOfWeek( this.props.viewDate.localeData() ).map( function( day, index ) { return React.createElement('th', { key: day + index, className: 'dow'}, day ); }) )
 			]),
 			React.createElement('tbody', { key: 'tb' }, this.renderDays())
 		];
@@ -32,6 +34,14 @@ var DateTimePickerDays = onClickOutside( createClass({
 		return React.createElement('div', { className: 'rdtDays' },
 			React.createElement('table', {}, tableChildren )
 		);
+	},
+
+	renderHeader: function(props) {
+		return [
+			React.createElement('th', { key: 'p', className: 'rdtPrev', onClick: props.subtractTime( 1, 'months' )}, React.createElement('span', {}, '‹' )),
+			React.createElement('th', { key: 's', className: 'rdtSwitch', onClick: props.showView( 'months' ), colSpan: 5, 'data-value': props.viewDate.month() }, props.viewDate.localeData().months( props.viewDate ) + ' ' + props.viewDate.year() ),
+			React.createElement('th', { key: 'n', className: 'rdtNext', onClick: props.addTime( 1, 'months' )}, React.createElement('span', {}, '›' ))
+		];
 	},
 
 	/**

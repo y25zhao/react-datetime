@@ -7,14 +7,28 @@ var React = require('react'),
 
 var DateTimePickerMonths = onClickOutside( createClass({
 	render: function() {
+		var headerRenderer = this.props.renderHeader || this.renderHeader;
+
+		var headerProps = {
+			view: 'month',
+			showView: this.props.showView,
+			subtractTime: this.props.subtractTime,
+			addTime: this.props.addTime,
+			viewDate: this.props.viewDate
+		};
+
 		return React.createElement('div', { className: 'rdtMonths' }, [
-			React.createElement('table', { key: 'a' }, React.createElement('thead', {}, React.createElement('tr', {}, [
-				React.createElement('th', { key: 'prev', className: 'rdtPrev', onClick: this.props.subtractTime( 1, 'years' )}, React.createElement('span', {}, '‹' )),
-				React.createElement('th', { key: 'year', className: 'rdtSwitch', onClick: this.props.showView( 'years' ), colSpan: 2, 'data-value': this.props.viewDate.year() }, this.props.viewDate.year() ),
-				React.createElement('th', { key: 'next', className: 'rdtNext', onClick: this.props.addTime( 1, 'years' )}, React.createElement('span', {}, '›' ))
-			]))),
+			React.createElement('table', { key: 'a' }, React.createElement('thead', {}, React.createElement('tr', {}, headerRenderer(headerProps)))),
 			React.createElement('table', { key: 'months' }, React.createElement('tbody', { key: 'b' }, this.renderMonths()))
 		]);
+	},
+
+	renderHeader: function(props) {
+		return [
+			React.createElement('th', { key: 'prev', className: 'rdtPrev', onClick: props.subtractTime( 1, 'years' )}, React.createElement('span', {}, '‹' )),
+			React.createElement('th', { key: 'year', className: 'rdtSwitch', onClick: props.showView( 'years' ), colSpan: 2, 'data-value': props.viewDate.year() }, props.viewDate.year() ),
+			React.createElement('th', { key: 'next', className: 'rdtNext', onClick: props.addTime( 1, 'years' )}, React.createElement('span', {}, '›' ))
+		];
 	},
 
 	renderMonths: function() {
